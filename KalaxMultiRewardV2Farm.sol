@@ -128,6 +128,20 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
     /// @notice Emitted when user withdraw assets
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
 
+    /// @notice Emitted when set the pool new token per block
+    event EventSetPoolTokenPerBlock(uint256 indexed pid, uint256 _rewardIndex,
+        uint256 _newTokenPerBlock);
+
+    /// @notice Emitted when set the start timestamp
+    event EventSetStartTimestamp(uint256 indexed _startTime);
+
+    /// @notice Emitted when set the bonus end time
+    event EventSetBonusEndTime(uint256 indexed _bonusEndTime);
+
+    /// @notice Emitted when set the WETH address
+    event EventSetWeth(address indexed _wethAddr);
+
+
     receive() external payable {}
 
     /// @notice Initialize the farm
@@ -142,7 +156,6 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
 
         _paused = false;
         totalAllocPoint = 0;
-        totalUserRevenue = 0;
 
         wethHelper = new ETHHelper();
     }
@@ -161,6 +174,8 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
 
         // update the pool
         updateMassPools();
+
+        emit EventSetPoolTokenPerBlock(_pid, _rewardIndex, _newTokenPerBlock);
     }
 
     /// @notice Set the farm start timestamp
@@ -168,6 +183,8 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
     function setStartTimestamp(uint256 _startTimestamp) public onlyOwner {
         require(startTimestamp == 0, "Farm: already started");
         startTimestamp = _startTimestamp;
+
+        emit EventSetStartTimestamp(_startTimestamp);
     }
 
     /// @notice Set bonus end time
@@ -177,6 +194,8 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
         require(_bonusEndTime > startTimestamp, "Farm: end time must greater than start time");
 
         bonusEndTime = _bonusEndTime;
+
+        emit EventSetBonusEndTime(_bonusEndTime);
     }
 
     /// @notice Set wrapped ETH token address
@@ -184,12 +203,8 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
     function setWeth(address _weth) public onlyOwner {
         require(_weth != address(0), "Farm: invalid weth address");
         weth = _weth;
-    }
 
-    /// @notice Set total allocation points
-    /// @param _totalAllocPoint The total allocation points
-    function setTotalAllocPoint(uint256 _totalAllocPoint) public onlyOwner {
-        totalAllocPoint = _totalAllocPoint;
+        emit EventSetWeth(_weth);
     }
 
     /// @notice Get total user revenue
@@ -327,7 +342,6 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
         require(startTimestamp == 0, "Farm: mining already started");
 
         startTimestamp = block.timestamp;
-        startBlock = block.number;
         bonusEndTime = startTimestamp + 30 days;
     }
 

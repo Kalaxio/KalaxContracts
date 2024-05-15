@@ -57,6 +57,21 @@ contract Vault is IVault, Initializable, OwnableUpgradeable, ReentrancyGuardUpgr
     /// @param amount Withdrawal amount by user
     event Withdraw(address indexed user, uint256 amount);
 
+    /// @notice Emitted when set the strategy
+    event EventSetStrategy(address indexed strategyAddr);
+
+    /// @notice Emitted when set the mainChef
+    event EventSetMainChef(address indexed mainChef);
+
+    /// @notice Emitted when set the WETH address
+    event EventSetWeth(address indexed _wethAddr);
+
+    /// @notice Emitted when set the assets address
+    event EventSetAssets(address indexed _assetsAddr);
+
+    /// @notice Emitted when set the team address
+    event EventSetTeamAddress(address indexed _teamAddr);
+
     /// @notice Initialize the pool
     /// @param _assets The pool asset
     /// @param _weth The WETH address
@@ -88,24 +103,32 @@ contract Vault is IVault, Initializable, OwnableUpgradeable, ReentrancyGuardUpgr
             transferETHToStrategy();
             transferERC20ToStrategy();
         }
+
+        emit EventSetStrategy(address(_strategy));
     }
 
     /// @notice Set the mainChef
     /// @param _mainChef The mainChef address
     function setMainChef(address _mainChef) external onlyOwner {
         mainChef = _mainChef;
+
+        emit EventSetMainChef(address(_mainChef));
     }
 
     /// @notice Set WETH address
     /// @param _weth WETH address
     function setWETH(address _weth) external onlyOwner {
         WETH = _weth;
+
+        emit EventSetWeth(_weth);
     }
 
     /// @notice Set the assets of the vault
     /// @param _assets The assets of the vault
     function setAssets(IERC20 _assets) external onlyOwner {
         assets = _assets;
+
+        emit EventSetAssets(address(_assets));
     }
 
     /// @notice Set the team address
@@ -113,6 +136,8 @@ contract Vault is IVault, Initializable, OwnableUpgradeable, ReentrancyGuardUpgr
     function setTeamAddress(address _addr) external onlyOwner {
         require(_addr != address(0), "team address cannot be zero");
         teamAddress = _addr;
+
+        emit EventSetTeamAddress(_addr);
     }
 
     /// @notice Return vault pool balance only (strategy balance not included)
