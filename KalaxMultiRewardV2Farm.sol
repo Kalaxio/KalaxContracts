@@ -376,7 +376,7 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
         bool _isEth,
         RewardInfo[] memory _rewards
     ) external onlyOwner {
-        require(_withdrawFee <= 2000, "Invalid withdraw fee");
+        require(_withdrawFee <= 2, "Invalid withdraw fee");
 
         checkDuplicatePool(_token);
 
@@ -472,7 +472,7 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
         bool _withUpdate,
         uint256 _withdrawFee
     ) external onlyOwner {
-        require(_withdrawFee <= 2000, "Invalid withdraw fee");
+        require(_withdrawFee <= 2, "Invalid withdraw fee");
 
         if (_withUpdate) {
             updateMassPools();
