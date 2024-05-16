@@ -638,6 +638,8 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
                 _amount = _amount + msg.value;
             }
         } else {
+            require(msg.value == 0, "Deposit invalid token");
+
             if (_amount > 0) {
                 TransferHelper.safeTransferFrom(address(pool.assets), address(msg.sender), address(this), _amount);
             }
