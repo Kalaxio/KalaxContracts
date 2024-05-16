@@ -201,7 +201,7 @@ contract Vault is IVault, Initializable, OwnableUpgradeable, ReentrancyGuardUpgr
 
         // deposit to strategy if has
         if (address(strategy) != address(0)) {
-            IStrategy(strategy).depositNative{value: _amount}(_userAddr);
+            IStrategy(strategy).depositNative{value: _amount}(address(this));
         }
 
         return _amount;
