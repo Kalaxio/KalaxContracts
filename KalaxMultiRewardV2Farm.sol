@@ -169,11 +169,11 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
 
         require(_pid >= 0, "Farm: invalid new pool pid");
 
-        PoolInfo storage pool = poolInfoList[_pid];
-        pool.rewards[_rewardIndex].tokenPerBlock = _newTokenPerBlock;
-
         // update the pool
         updateMassPools();
+
+        PoolInfo storage pool = poolInfoList[_pid];
+        pool.rewards[_rewardIndex].tokenPerBlock = _newTokenPerBlock;
 
         emit EventSetPoolTokenPerBlock(_pid, _rewardIndex, _newTokenPerBlock);
     }
@@ -438,8 +438,15 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
         address[] memory userList = poolUserList[_pid].values();
         for (uint256 i = 0; i < userList.length; i++) {
             address userAddr = userList[i];
+
+            UserInfo storage user = userInfo[_pid][userAddr];
+
             uint256 _pendingRemovingRewards = pendingRewardToken(_pid, userAddr, _rewardToken);
             if (_pendingRemovingRewards > 0) {
+
+                user.rewardDebt[_rewardToken] = user.rewardDebt[_rewardToken] + _pendingRemovingRewards;
+                totalUserRevenue[_rewardToken] = totalUserRevenue[_rewardToken] + _pendingRemovingRewards;
+
                 safeTokenTransfer(_rewardToken, userAddr, _pendingRemovingRewards);
             }
         }
@@ -722,28 +729,12 @@ contract KalaxMultiRewardV2Farm is Initializable, OwnableUpgradeable, Reentrancy
     /// @dev Get the multiplier
     function getMultiplier(uint256 _from, uint256 _to) public view returns (uint256){
         if (_to <= bonusEndTime) {
-            return _to - (_from) * (BONUS_MULTIPLIER);
+            return (_to - _from) * BONUS_MULTIPLIER;
         } else if (_from >= bonusEndTime) {
-            return _to - (_from);
+            return _to - _from;
         } else {
-            return bonusEndTime - (_from) * (BONUS_MULTIPLIER) + (
-                _to - (bonusEndTime)
-            );
+            return (bonusEndTime - _from) * BONUS_MULTIPLIER + (_to - bonusEndTime);
         }
-    }
-
-    /// @notice Set the pool assets
-    /// @param _pid The pool id
-    /// @param _token The pool new assets
-    function setPoolAsset(
-        uint256 _pid,
-        IERC20 _token
-    ) external onlyOwner {
-
-        poolInfoList[_pid].assets = _token;
-
-        _token.approve(address(poolInfoList[_pid].vault), 0);
-        _token.approve(address(poolInfoList[_pid].vault), type(uint256).max);
     }
 
     /// @notice Set the pool vault
