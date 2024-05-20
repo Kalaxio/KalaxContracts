@@ -5,10 +5,9 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "../comm/TransferHelper.sol";
-import "../interfaces/IVault.sol";
-import "../interfaces/IStrategy.sol";
-import "hardhat/console.sol";
+import "./comm/TransferHelper.sol";
+import "./interfaces/IVault.sol";
+import "./interfaces/IStrategy.sol";
 
 /***
 * @notice - This is the vault contract for the mainChef
@@ -180,7 +179,6 @@ contract Vault is IVault, Initializable, OwnableUpgradeable, ReentrancyGuardUpgr
 
         uint256 _depositAmount;
         if (address(assets) == WETH) {
-            console.log("msg.value = ", msg.value);
             _depositAmount = _depositETH(_userAddr, msg.value);
         } else {
             _depositAmount = _deposit(_userAddr, mainChef, _amount);

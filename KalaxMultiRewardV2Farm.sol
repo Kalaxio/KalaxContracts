@@ -6,9 +6,9 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "../interfaces/IVault.sol";
-import "../comm/ETHHelper.sol";
-import "../comm/TransferHelper.sol";
+import "./interfaces/IVault.sol";
+import "./comm/ETHHelper.sol";
+import "./comm/TransferHelper.sol";
 
 /***
 * @notice - This is the main multi-reward Farm contract
